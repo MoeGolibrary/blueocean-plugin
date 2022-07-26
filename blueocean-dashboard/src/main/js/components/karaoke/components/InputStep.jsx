@@ -9,6 +9,7 @@ import {
     logging,
 } from '@jenkins-cd/blueocean-core-js';
 import { Alerts } from '@jenkins-cd/design-language';
+import { safeHtml } from 'html5parser';
 
 /**
  * Simple helper to stop stopPropagation
@@ -141,7 +142,11 @@ export default class InputStep extends Component {
         return (
             <div className="inputStep">
                 <div className="inputBody">
-                    <h3>{StringUtil.removeMarkupTags(message)}</h3>
+                    {/<\w+[^>]*>/.test(message) ? (
+                        <div dangerouslySetInnerHTML={{__html: safeHtml(message)}}/>
+                    ) : (
+                        <h3>{StringUtil.removeMarkupTags(message)}</h3>
+                    )}
                     <ParametersRender parameters={parameters} onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue)} />
                     <div onClick={event => stopProp(event)} className="inputControl">
                         <button title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit">
