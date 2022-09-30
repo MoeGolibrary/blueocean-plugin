@@ -38,3 +38,4 @@ src/main/groovy/pipeline.gdsl
 nb-configuration.xml
 nbactions.xml
 out
+.home

@@ -1,0 +1,10 @@
+build:
+  steps:
+    - action: run-script
+      title: build
+      params:
+        image: maven:3.8.6-openjdk-8
+        command:
+          - bash
+          - ci/build.sh
+
