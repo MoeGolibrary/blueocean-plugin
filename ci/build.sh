@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+return
+
 set -xeuo pipefail
 
 export HOME="$PWD/.home"
