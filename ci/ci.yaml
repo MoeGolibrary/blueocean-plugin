@@ -3,7 +3,7 @@ build:
     - action: run-script
       title: build
       params:
-        image: maven:3.8.6-openjdk-8
+        image: maven:3.8.6-openjdk-11
         command:
           - bash
           - ci/build.sh
