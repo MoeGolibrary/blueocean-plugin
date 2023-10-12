@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.67</version>
+    <version>4.73</version>
     <relativePath />
   </parent>
 
@@ -25,7 +25,7 @@
   </licenses>
 
   <properties>
-    <revision>1.27.6</revision>
+    <revision>1.27.9</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/blueocean-plugin</gitHubRepo>
     <!--
@@ -34,18 +34,17 @@
     -->
     <jenkins.version>2.401.3</jenkins.version>
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
+    <byte-buddy.version>1.14.7</byte-buddy.version>
     <frontend-version>1.12.0</frontend-version>
     <node.version>10.13.0</node.version>
     <npm.version>6.14.4</npm.version>
-    <mockito.version>4.7.0</mockito.version>
-    <jacoco.version>0.8.6</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
     <!-- override this as memory in parent pom is not big enough -->
-    <argLine>-Xmx2g -Xms2g -Djava.awt.headless=true -XX:+HeapDumpOnOutOfMemoryError -XX:+TieredCompilation -XX:TieredStopAtLevel=1 @{jenkins.addOpens} @{jenkins.insaneHook}</argLine>
+    <argLine>-Xmx3g -Xms3g -Djava.awt.headless=true -XX:+HeapDumpOnOutOfMemoryError -XX:+TieredCompilation -XX:TieredStopAtLevel=1 @{jenkins.addOpens} @{jenkins.insaneHook}</argLine>
   </properties>
 
   <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
@@ -202,11 +201,6 @@
           <scope>test</scope>
       </dependency>
       <dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-inline</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
           <groupId>com.mashape.unirest</groupId>
           <artifactId>unirest-java</artifactId>
           <scope>test</scope>
@@ -217,13 +211,6 @@
               </exclusion>
           </exclusions>
       </dependency>
-      <dependency>
-          <groupId>org.jacoco</groupId>
-          <artifactId>org.jacoco.agent</artifactId>
-          <classifier>runtime</classifier>
-          <version>${jacoco.version}</version>
-          <scope>test</scope>
-      </dependency>
   </dependencies>
 
   <dependencyManagement>
@@ -232,7 +219,7 @@
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
             <artifactId>bom-2.401.x</artifactId>
-            <version>2102.v854b_fec19c92</version>
+            <version>2401.v7a_d68f8d0b_09</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
@@ -362,30 +349,7 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>pipeline-milestone-step</artifactId>
-            <version>1.3.2</version>
-        </dependency>
-
         <!-- Other -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>github-branch-source</artifactId>
-            <version>2.6.0</version>
-            <exclusions>
-                <!-- commons-lang3 is provided by commons-lang3-api plugin -->
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang3</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>cloudbees-bitbucket-branch-source</artifactId>
-            <version>2.9.11</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
@@ -453,16 +417,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>pubsub-light</artifactId>
-            <version>1.16</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>sse-gateway</artifactId>
-            <version>1.24</version>
-        </dependency>
-        <dependency>
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
             <version>2.0.8</version>
@@ -471,24 +425,6 @@
             <groupId>org.bitbucket.b_c</groupId>
             <artifactId>jose4j</artifactId>
             <version>0.9.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet.hudson.plugins</groupId>
-            <artifactId>favorite</artifactId>
-            <version>2.3.1</version>
-            <exclusions>
-                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree
-                     PR https://github.com/jenkinsci/token-macro-plugin/pull/31. Fix to be available in 2.4.0.
-                -->
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm-tree</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.keen</groupId>
@@ -503,37 +439,14 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.ua-parser</groupId>
-            <artifactId>uap-java</artifactId>
-            <version>1.5.2</version>
-            <exclusions>
-              <!-- commons-collections comes from jenkins core -->
-              <exclusion>
-                <groupId>commons-collections</groupId>
-                <artifactId>commons-collections</artifactId>
-              </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- used in blueocean-pipeline-editor test -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sonar</artifactId>
             <version>2.13.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.11</version>
-        </dependency>
 
         <!-- Test dependencies -->
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <version>1.3</version>
-        </dependency>
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
@@ -561,22 +474,12 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.12.13</version>
+            <version>${byte-buddy.version}</version>
         </dependency>
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-agent</artifactId>
-            <version>1.12.13</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <version>${mockito.version}</version>
+            <version>${byte-buddy.version}</version>
         </dependency>
         <!-- some tests need to  write final field -->
         <dependency>
@@ -587,7 +490,7 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8-standalone</artifactId>
-            <version>2.33.2</version>
+            <version>2.35.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -606,11 +509,6 @@
             <artifactId>jsoup</artifactId>
             <version>1.15.3</version>
             <scope>test</scope>
-        </dependency>
-        <dependency> <!-- TODO pending https://github.com/jenkinsci/jenkins-test-harness/pull/2 -->
-            <groupId>org.eclipse.sisu</groupId>
-            <artifactId>org.eclipse.sisu.plexus</artifactId>
-            <version>0.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.damnhandy</groupId>
@@ -641,65 +539,9 @@
                       <failOnError>${access-modifier-checker.failOnError}</failOnError>
                   </configuration>
               </plugin>
-              <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-javadoc-plugin</artifactId>
-                  <version>3.2.0</version>
-              </plugin>
-              <plugin>
-                  <groupId>org.jacoco</groupId>
-                  <artifactId>jacoco-maven-plugin</artifactId>
-                  <version>${jacoco.version}</version>
-                  <configuration>
-                      <haltOnFailure>${jacoco.haltOnFailure}</haltOnFailure>
-                      <destFile>${project.build.directory}/code-coverage/jacoco.exec</destFile>
-                      <!-- Sets the path to the file which contains the execution data. -->
-                      <dataFile>${project.build.directory}/code-coverage/jacoco.exec</dataFile>
-                      <!-- Sets the output directory for the code coverage report. -->
-                      <outputDirectory>${project.build.directory}/code-coverage/report</outputDirectory>
-                  </configuration>
-
-                  <executions>
-                      <execution>
-                          <id>default-instrument</id>
-                          <goals>
-                              <goal>instrument</goal>
-                          </goals>
-                      </execution>
-                      <execution>
-                          <id>default-restore-instrumented-classes</id>
-                          <goals>
-                              <goal>restore-instrumented-classes</goal>
-                          </goals>
-                      </execution>
-
-                      <execution>
-                          <id>default-report</id>
-                          <phase>prepare-package</phase>
-                          <goals>
-                              <goal>report</goal>
-                          </goals>
-                      </execution>
-                  </executions>
-              </plugin>
           </plugins>
       </pluginManagement>
     <plugins>
-      <plugin> <!-- TODO could probably all be deleted -->
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-              <reuseForks>true</reuseForks>
-              <forkCount>${concurrency}</forkCount>
-              <!--
-              The following line is the one that's a must. Without it, will get jacoco complexity failures.
-              -->
-              <argLine>-Djava.awt.headless=true ${argLine}</argLine>
-              <rerunFailingTestsCount>0</rerunFailingTestsCount>
-              <systemPropertyVariables>
-                  <jacoco-agent.destfile>${project.build.directory}/code-coverage/jacoco.exec</jacoco-agent.destfile>
-              </systemPropertyVariables>
-          </configuration>
-      </plugin>
         <plugin>
             <artifactId>maven-enforcer-plugin</artifactId>
             <executions>
@@ -825,6 +667,23 @@
             <modules>
                 <module>acceptance-tests</module>
             </modules>
+        </profile>
+        <profile>
+            <id>ci</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <excludedGroups>flaky</excludedGroups>
+                                <rerunFailingTestsCount>2</rerunFailingTestsCount>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
         </profile>
     </profiles>
 </project>
