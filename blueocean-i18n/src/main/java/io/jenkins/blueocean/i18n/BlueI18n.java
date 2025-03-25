@@ -34,10 +34,10 @@ import net.sf.json.JSONObject;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -91,7 +91,7 @@ public class BlueI18n implements ApiRoutable {
      * @param request The request.
      * @return The JSON response.
      */
-    public HttpResponse doDynamic(StaplerRequest request) {
+    public HttpResponse doDynamic(StaplerRequest2 request) {
         String path = request.getOriginalRequestURI();
         String contextPath = request.getContextPath();
         BundleParams bundleParams;
@@ -140,7 +140,9 @@ public class BlueI18n implements ApiRoutable {
         }
 
         try {
-            ResourceBundle resourceBundle = ResourceBundle.getBundle(bundleParams.bundleName, locale, plugin.classLoader);
+            // We don't want to fall back to the default locale.
+            var control = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
+            ResourceBundle resourceBundle = ResourceBundle.getBundle(bundleParams.bundleName, locale, plugin.classLoader, control);
             JSONObject bundleJSON = new JSONObject();
             for (String key : resourceBundle.keySet()) {
                 bundleJSON.put(key, resourceBundle.getString(key));
@@ -367,7 +369,7 @@ public class BlueI18n implements ApiRoutable {
          * {@inheritDoc}
          */
         @Override
-        public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException {
+        public void generateResponse(StaplerRequest2 req, StaplerResponse2 rsp, Object node) throws IOException {
             rsp.setStatus(statusCode);
             rsp.setContentType("application/json; charset=UTF-8");
             if (bundleCacheEntry != null) {
